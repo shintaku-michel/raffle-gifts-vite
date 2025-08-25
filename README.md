@@ -39,8 +39,9 @@ O projeto ainda está em desenvolvimento e as próximas atualizações serão vo
 - [x] Lista de participantes
 - [x] Gerador randômico de participantes
 - [x] Exclusão de participante sorteado
-- [ ] Lista de todos os ganhadores
-- [ ] link para compartilhar pelo whatsapp
+- [X] Lista de todos os ganhadores (data/hora)
+- [X] Ranking de participantes
+- [X] Configuração de número de vitórias para o VENCEDOR
 
 ## Ambiente nodeJs
 * node `<16.17.0>`
