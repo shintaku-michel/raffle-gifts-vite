@@ -42,6 +42,7 @@ O projeto ainda está em desenvolvimento e as próximas atualizações serão vo
 - [X] Lista de todos os ganhadores (data/hora)
 - [X] Ranking de participantes
 - [X] Configuração de número de vitórias para o VENCEDOR
+- [x] Cadastro de multiplos participantes
 
 ## Ambiente nodeJs
 * node `<16.17.0>`

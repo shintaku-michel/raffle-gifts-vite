@@ -1,4 +1,4 @@
-import { Plus, UserSwitch, Gear } from "phosphor-react";
+import { Gear, Plus, UserSwitch } from "phosphor-react";
 import React, { useEffect, useState } from 'react';
 import './styles.css';
 
@@ -39,18 +39,24 @@ export function Home() {
       document.getElementById("inputNameUser").placeholder = "Digite o nome do participante (campo obrigatório)";
       document.getElementById("inputNameUser").focus()
     } else{
-      const newUser = {
+      // Separa os nomes por vírgula e remove espaços em branco
+      const names = userName.split(',').map(name => name.trim()).filter(name => name !== '');
+      
+      const newUsers = names.map(name => ({
         id: Math.floor(Date.now() * Math.random()).toString(36),
-        name: userName,
+        name: name,
         time: new Date().toLocaleTimeString('pt-br', {
           hour: '2-digit',
           minute: '2-digit',
           second: '2-digit'
         })
-      }
-      setUsers(prevState => [...prevState, newUser])
+      }));
+
+      setUsers(prevState => [...prevState, ...newUsers]);
+      setUserName(''); // Limpa o input
 
       /* REMOVE VALOR INPUT */
+      document.getElementById("inputNameUser").value = '';
       document.getElementById("inputNameUser").focus()
       document.getElementById("list-users-legend").style.display = 'none';
     }
@@ -136,7 +142,8 @@ export function Home() {
         <input
           id="inputNameUser" 
           type="text" 
-          placeholder="Digite o nome do participante"
+          placeholder="Use vírgula para múltiplos participantes"
+          value={userName}
           onChange={ callbackFuncao => setUserName(callbackFuncao.target.value)}
         />
 
