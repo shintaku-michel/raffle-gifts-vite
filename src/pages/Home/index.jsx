@@ -142,7 +142,7 @@ export function Home() {
         <input
           id="inputNameUser" 
           type="text" 
-          placeholder="Use vírgula para múltiplos participantes"
+          placeholder="Use vírgula para cadastrar múltiplos participantes"
           value={userName}
           onChange={ callbackFuncao => setUserName(callbackFuncao.target.value)}
         />
