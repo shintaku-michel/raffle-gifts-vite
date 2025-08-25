@@ -1,14 +1,37 @@
-import { Plus, UserSwitch } from "phosphor-react";
+import { Plus, UserSwitch, Gear } from "phosphor-react";
 import React, { useEffect, useState } from 'react';
 import './styles.css';
 
 export function Home() {
+  const [victoryThreshold, setVictoryThreshold] = useState(() => {
+    const saved = localStorage.getItem('victoryThreshold');
+    return saved ? parseInt(saved) : 5;
+  });
   const [userName, setUserName] = useState('');
   const [users, setUsers] = useState([]);
   const [user, setUser] = useState({ name: '', avatar: '' })
   const [count, setCount] = useState(0);
   const [winners, setWinners] = useState([]);
   const [winnerStats, setWinnerStats] = useState({});
+  const [showLegend, setShowLegend] = useState(true);
+  const [showModal, setShowModal] = useState(false);
+  const [tempThreshold, setTempThreshold] = useState(victoryThreshold);
+
+  const saveSettings = () => {
+    localStorage.setItem('victoryThreshold', tempThreshold.toString());
+    setVictoryThreshold(tempThreshold);
+    setShowModal(false);
+  };
+
+  const openModal = () => {
+    setTempThreshold(victoryThreshold);
+    setShowModal(true);
+  };
+
+  const closeModal = () => {
+    setTempThreshold(victoryThreshold);
+    setShowModal(false);
+  };
 
   function addUser(){
     if(userName === ""){
@@ -61,7 +84,8 @@ export function Home() {
           month: '2-digit', 
           year: '2-digit',
           hour: '2-digit',
-          minute: '2-digit'
+          minute: '2-digit',
+          second: '2-digit'
         })
       };
       
@@ -88,14 +112,18 @@ export function Home() {
         location: data.location,
         url: data.html_url
       })
-    } )
-  }, []);
+    } ) 
+    .catch(error => {
+      console.error("Erro ao buscar dados do usuário no github", error);
+    },
+  )}, []);
 
   return (
     <div className="container-global">
       <div className='container'>
         <header>
           <div className="content-user">
+
             <img src={user.avatar} alt="Imagem perfil" />
             <div>
               <strong>{user.name} - Developer</strong>
@@ -129,7 +157,7 @@ export function Home() {
 
         <div className='list-users'>
           <h2>Participantes <span>({users.length})</span></h2>
-          <div id='list-users-legend'>[Lista vazia]</div>
+          {showLegend && <div id='list-users-legend'>[Lista vazia]</div>}
         </div>
 
         {
@@ -161,8 +189,13 @@ export function Home() {
             <h2 className="ranking-title">
               Ranking
             </h2>
-            <div className="competitors-badge">
-              {users.length} competidores
+            <div className="ranking-header-right">
+              <div className="competitors-badge">
+                {users.length} competidores
+              </div>
+              <button onClick={openModal} className="settings-button">
+                <Gear size={18} />
+              </button>
             </div>
           </div>
 
@@ -210,10 +243,17 @@ export function Home() {
                           {medalEmoji || `${actualPosition}º`}
                         </div>
                         <div className="ranking-player-info">
-                          <span className={`ranking-player-name ${
-                            isFirst ? 'ranking-player-name-first' : isSecond ? 'ranking-player-name-second' : isThird ? 'ranking-player-name-third' : 'ranking-player-name-normal'
-                          }`}>{name}</span>
-                          {isFirst && count > 0 && <div className="champion-label">CAMPEÃO</div>}
+                          <div className="player-name-container">
+                            {wins >= victoryThreshold && (
+                              <span className="winner-badge">VENCEDOR</span>
+                            )}
+                            
+                            <span className={`ranking-player-name ${
+                              isFirst ? 'ranking-player-name-first' : isSecond ? 'ranking-player-name-second' : isThird ? 'ranking-player-name-third' : 'ranking-player-name-normal'
+                            }`}>
+                              {name}
+                            </span>
+                          </div>
                         </div>
                       </div>
                       
@@ -221,8 +261,13 @@ export function Home() {
                         <div className={`wins-badge ${
                           isFirst ? 'wins-badge-first' : isSecond ? 'wins-badge-second' : isThird ? 'wins-badge-third' : 'wins-badge-normal'
                         }`}>
-                          {wins} vitória{wins > 1 ? 's' : ''}
+                          {Math.min(wins, victoryThreshold)} vitória{Math.min(wins, victoryThreshold) > 1 ? 's' : ''}
                         </div>
+                        {wins > victoryThreshold && (
+                          <div className="extra-wins">
+                            +{wins - victoryThreshold}
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -280,6 +325,42 @@ export function Home() {
           </div>
         </div>
       </div>
+
+      {showModal && (
+        <div className="modal-overlay" onClick={closeModal}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>Configurações do Sorteio</h3>
+              <button onClick={closeModal} className="modal-close">×</button>
+            </div>
+            <div className="modal-body">
+              <label htmlFor="victory-threshold">
+                Número de vitórias para vencer:
+              </label>
+              <input
+                id="victory-threshold"
+                type="number"
+                min="1"
+                max="50"
+                value={tempThreshold}
+                onChange={(e) => setTempThreshold(parseInt(e.target.value) || 1)}
+                className="threshold-input"
+              />
+              <p className="threshold-info">
+                Atual: {victoryThreshold} vitória{victoryThreshold > 1 ? 's' : ''}
+              </p>
+            </div>
+            <div className="modal-footer">
+              <button onClick={closeModal} className="cancel-button">
+                Cancelar
+              </button>
+              <button onClick={saveSettings} className="save-button">
+                Salvar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
