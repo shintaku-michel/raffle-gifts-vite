@@ -1,5 +1,5 @@
 import { Gear, Plus, UserSwitch } from "phosphor-react";
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import './styles.css';
 
 export function Home() {
@@ -132,7 +132,7 @@ export function Home() {
 
             <img src={user.avatar} alt="Imagem perfil" />
             <div>
-              <strong>{user.name} - Developer</strong>
+              <strong>{user.name} - Dev</strong>
               <span>Location: {user.location} - <a href={user.url}>gitHub</a></span>
             </div>
           </div>
